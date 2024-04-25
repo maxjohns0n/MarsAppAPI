@@ -1,5 +1,5 @@
 import express from 'express';
-import { getRovers, getPhotos } from './nasa-interface';
+import { getRovers, getPhotos, parseCameraType } from './nasa-interface';
 
 const app = express();
 const port = 8000;
@@ -18,9 +18,9 @@ router.get('/rovers', async (req: any, res: any, next: any) => {
 }
 );
 
-router.get('/rovers/photos', async (req: any, res: any, next: any) => {
+router.get('/rovers/:roverName/photos/:cameraType', async (req: {params: {roverName: string, cameraType: string}}, res: any, next: any) => {
     try {
-        res.send(await getPhotos());
+        res.send(await getPhotos(req.params.roverName, parseCameraType(req.params.cameraType)));
     } catch (err) {
         next(err);
     }
