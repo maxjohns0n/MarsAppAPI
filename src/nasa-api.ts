@@ -1,17 +1,30 @@
 import axios from 'axios';
 import 'dotenv/config'
-import { CameraType, RequestParams } from './types';
+import { CameraType, RequestParams, PhotoResponse } from './types';
 
 const api_key = process.env.API_KEY;
 const base_url = 'https://api.nasa.gov/mars-photos/api/v1';
 
 
 
-export function parseCameraType(cameraStr: string) : CameraType {
+function parseCameraType(cameraStr: string) : CameraType {
     const camera = CameraType[cameraStr.toUpperCase() as keyof typeof CameraType];
     if (camera === undefined)
         throw new Error('Invalid camera type specified');
     return camera;
+}
+
+function parsePhotoResponse(data: PhotoResponse) : PhotoResponse {
+    const response: PhotoResponse = { photos: [] };
+    for (const photo of data.photos) {
+        response.photos.push({
+            id: photo.id,
+            sol: photo.sol,
+            img_src: photo.img_src,
+            earth_date: photo.earth_date
+        });
+    }
+    return response;
 }
 
 async function makeRequest(endpoint: string, params: RequestParams = {}) {
@@ -42,7 +55,7 @@ export async function getPhotos(rover: string, camera: string) {
             sol: 1000,
             camera: cameraType
         });
-        return response.data;
+        return parsePhotoResponse(response.data);
     } catch (err) {
         console.error(err);
         throw new Error('Failed to get photos from NASA API.');

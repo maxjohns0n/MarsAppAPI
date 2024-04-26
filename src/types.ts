@@ -20,4 +20,15 @@ type RequestParams = {
     camera?: CameraType
 }
 
-export { PhotoParams, CameraType, RequestParams }
+type PhotoData = {
+    id: number,
+    sol: number,
+    img_src: string,
+    earth_date: Date
+}
+
+type PhotoResponse = {
+    photos: PhotoData[]    
+}
+
+export { PhotoParams, CameraType, RequestParams, PhotoResponse }
